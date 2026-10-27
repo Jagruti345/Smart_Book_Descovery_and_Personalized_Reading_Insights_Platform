@@ -1,0 +1,55 @@
+version: "3.9"
+
+# Production-oriented compose file. For local evaluation/viva, you don't need
+# this at all -- just run the backend with SQLite and the frontend with
+# `npm run dev` (see README.md). This file is for when you're ready to move
+# to Postgres + Redis.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bookapp
+      POSTGRES_USER: bookapp
+      POSTGRES_PASSWORD: bookapp_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://bookapp:bookapp_password@postgres/bookapp
+      SECRET_KEY: change-me-in-production
+      CORS_ORIGINS: '["http://localhost:3000"]'
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "python seed_data.py && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:

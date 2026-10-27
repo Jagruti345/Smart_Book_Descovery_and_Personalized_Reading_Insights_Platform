@@ -1,0 +1,10 @@
+{
+  "name": "Folio — Smart Book Discovery",
+  "short_name": "Folio",
+  "description": "AI-powered book discovery, accessible reading, and audiobooks.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#EFE6D3",
+  "theme_color": "#1C2B3A",
+  "icons": []
+}
