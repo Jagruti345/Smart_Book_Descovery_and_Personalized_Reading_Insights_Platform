@@ -1,4 +1,6 @@
+
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
@@ -30,17 +32,21 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Detect scroll to add shadow
+  // Update navbar appearance when the page is scrolled.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const hideChrome = pathname === "/login" || pathname === "/register" || pathname === "/onboarding";
+  const hideChrome =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/onboarding";
+
   if (hideChrome) return null;
 
-  // On hero (dark) pages, use cream text
+  // Apply the light navigation theme on the landing page.
   const isHeroPage = pathname === "/";
 
   return (
@@ -55,11 +61,13 @@ export default function Navbar() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex h-16 items-center justify-between gap-4">
-          {/* Brand Logo */}
+
+          {/* Application branding */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
             <div className="w-9 h-9 rounded-xl bg-navy flex items-center justify-center shadow-sm group-hover:scale-105 group-hover:shadow-[0_0_12px_rgba(192,125,28,0.4)] transition-all duration-300 relative overflow-hidden shine-sweep">
               <BookOpen size={20} strokeWidth={2.2} className="text-amber relative z-10" />
             </div>
+
             <div className="flex flex-col">
               <span
                 className={`font-serif text-xl font-bold tracking-tight leading-none transition-colors ${
@@ -74,10 +82,11 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Main navigation links for desktop screens */}
           <nav className="hidden md:flex items-center gap-1">
             {links.map(({ href, label, icon: Icon }) => {
               const active = pathname?.startsWith(href);
+
               return (
                 <Link
                   key={href}
@@ -95,6 +104,7 @@ export default function Navbar() {
                     className={`transition-transform group-hover:scale-110 ${active ? "text-amber" : ""}`}
                   />
                   {label}
+
                   {active && (
                     <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-amber" />
                   )}
@@ -106,7 +116,9 @@ export default function Navbar() {
               <Link
                 href="/admin"
                 className={`flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors ${
-                  pathname?.startsWith("/admin") ? "bg-navy text-cream" : "text-ink-soft hover:bg-ink/5"
+                  pathname?.startsWith("/admin")
+                    ? "bg-navy text-cream"
+                    : "text-ink-soft hover:bg-ink/5"
                 }`}
               >
                 <ShieldCheck size={13} />
@@ -115,11 +127,11 @@ export default function Navbar() {
             )}
           </nav>
 
-          {/* Right Action Bar */}
+          {/* Account actions and authentication controls */}
           <div className="flex items-center gap-2.5">
             {!loading && user && (
               <>
-                {/* Reading Streak Badge */}
+                {/* Current reading streak indicator */}
                 <div
                   className="flex items-center gap-1.5 rounded-full glass-amber border border-amber/25 px-3 py-1.5 text-xs font-bold text-amber"
                   title={`${user.current_streak} days consecutive reading streak`}
@@ -128,11 +140,12 @@ export default function Navbar() {
                   <span>{user.current_streak}d</span>
                 </div>
 
-                {/* User Name + Sign Out */}
+                {/* Logged-in user details and logout action */}
                 <div className="hidden lg:flex items-center gap-2 pl-2.5 border-l border-ink/10">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber to-amber-bright flex items-center justify-center text-ink text-[11px] font-bold">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
+
                   <span
                     className={`text-xs font-medium truncate max-w-[100px] ${
                       isHeroPage && !scrolled ? "text-cream/80" : "text-ink-soft"
@@ -140,6 +153,7 @@ export default function Navbar() {
                   >
                     {user.name.split(" ")[0]}
                   </span>
+
                   <button
                     onClick={logout}
                     aria-label="Sign out"
@@ -164,6 +178,7 @@ export default function Navbar() {
                 >
                   Sign in
                 </Link>
+
                 <Link
                   href="/register"
                   className="glow-btn flex items-center gap-1.5 rounded-full bg-amber text-ink px-4 py-2 text-xs font-bold shadow-sm"
@@ -174,10 +189,12 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Mobile Menu Button */}
+            {/* Toggle button for smaller screens */}
             <button
               className={`md:hidden p-2 rounded-lg transition-colors ${
-                isHeroPage && !scrolled ? "text-cream/70 hover:bg-cream/10" : "text-ink-soft hover:bg-ink/5"
+                isHeroPage && !scrolled
+                  ? "text-cream/70 hover:bg-cream/10"
+                  : "text-ink-soft hover:bg-ink/5"
               }`}
               onClick={() => setOpen((o) => !o)}
               aria-label="Toggle menu"
@@ -187,7 +204,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Responsive navigation dropdown */}
         {open && (
           <div className="md:hidden border-t border-ink/10 py-4 px-2 space-y-1 animate-fade-in-down glass rounded-b-2xl mb-2">
             {links.map(({ href, label, icon: Icon }) => (
@@ -205,6 +222,7 @@ export default function Navbar() {
                 {label}
               </Link>
             ))}
+
             {user && (
               <button
                 onClick={() => {
@@ -217,6 +235,7 @@ export default function Navbar() {
                 Sign out ({user.name})
               </button>
             )}
+
             {!user && (
               <div className="flex gap-2 pt-2 border-t border-ink/5">
                 <Link
@@ -226,6 +245,7 @@ export default function Navbar() {
                 >
                   Sign In
                 </Link>
+
                 <Link
                   href="/register"
                   onClick={() => setOpen(false)}
